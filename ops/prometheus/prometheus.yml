@@ -1,0 +1,31 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    stack: mohkam
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Compose DNS returns one A record per replica; dns_sd discovers them all
+  # so scaling the api does not require editing this file.
+  - job_name: mohkam-api
+    metrics_path: /metrics
+    dns_sd_configs:
+      - names: ["api"]
+        type: A
+        port: 3000
+
+  - job_name: mohkam-worker
+    metrics_path: /metrics
+    dns_sd_configs:
+      - names: ["worker"]
+        type: A
+        port: 3001
+
+  - job_name: minio
+    metrics_path: /minio/v2/metrics/cluster
+    static_configs:
+      - targets: ["minio:9000"]

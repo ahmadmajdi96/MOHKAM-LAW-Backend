@@ -1,0 +1,35 @@
+{
+  "name": "@mohkam/api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "migrate": "bun src/db/migrate.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:studio": "drizzle-kit studio",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.797.0",
+    "@aws-sdk/s3-request-presigner": "^3.797.0",
+    "@ai-sdk/openai-compatible": "^2.0.51",
+    "ai": "^6.0.208",
+    "bullmq": "^5.52.0",
+    "drizzle-orm": "^0.44.2",
+    "hono": "^4.7.8",
+    "ioredis": "^5.6.1",
+    "jose": "^6.0.11",
+    "mammoth": "^1.12.0",
+    "pdfjs-dist": "^6.0.227",
+    "pino": "^9.6.0",
+    "postgres": "^3.4.5",
+    "prom-client": "^15.1.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.12",
+    "drizzle-kit": "^0.31.1",
+    "typescript": "^5.8.3"
+  }
+}
