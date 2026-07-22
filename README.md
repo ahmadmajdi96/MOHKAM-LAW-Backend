@@ -30,8 +30,10 @@ caddy ──► api ×N ──► pgbouncer ──► postgres 17 + pgvector
 worker ×N ──► document-index · ai-task · sms-send · maintenance
 ```
 
-Postgres, Redis and MinIO sit on an `internal: true` network. Only the API
-(port 9222) and MinIO (9000/9001) are published to the host.
+All services share a single Docker network (the compose project default), so
+the stack only ever consumes one subnet — it won't exhaust Docker's address
+pool. Only the API (port 9222) and MinIO (9000/9001) are published to the host;
+Postgres, Redis and PgBouncer are reachable only from inside the network.
 
 ## Quick start — one command
 

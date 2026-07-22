@@ -121,7 +121,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 30s
-    networks: [backend]
     logging: *default-logging
     deploy:
       resources:
@@ -160,7 +159,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 15s
-    networks: [backend]
     logging: *default-logging
 
   # ------------------------------------------------------------------- cache
@@ -188,7 +186,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
-    networks: [backend]
     logging: *default-logging
     deploy:
       resources:
@@ -219,7 +216,6 @@ services:
     # `edge` as well as `backend`: host port publishing (above) is impossible
     # from the internal-only `backend` network, and browsers need to reach the
     # presigned upload/download URLs directly.
-    networks: [backend, edge]
     logging: *default-logging
 
   # One-shot: create the bucket and lock it down to private.
@@ -235,7 +231,6 @@ services:
       mc version enable local/${S3_BUCKET:-mohkam} &&
       echo 'minio bucket ready'
       "
-    networks: [backend]
     restart: "no"
 
   # --------------------------------------------------------------------- api
@@ -266,7 +261,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-    networks: [backend, edge]
     logging: *default-logging
     deploy:
       # Single replica by default (one host port). Scale behind Caddy via the
@@ -284,7 +278,6 @@ services:
     environment: *api-env
     depends_on:
       postgres: { condition: service_healthy }
-    networks: [backend]
     restart: "no"
     logging: *default-logging
 
@@ -311,7 +304,6 @@ services:
       migrate: { condition: service_completed_successfully }
     # `edge` too: the worker makes outbound calls to Novita, ElevenLabs and
     # Twilio, which the internal-only `backend` network cannot route.
-    networks: [backend, edge]
     logging: *default-logging
     deploy:
       replicas: 2
@@ -339,7 +331,6 @@ services:
       - caddy-config:/config
     depends_on:
       - api
-    networks: [edge]
     logging: *default-logging
 
   # ----------------------------------------------------------- observability
@@ -355,7 +346,6 @@ services:
     volumes:
       - ./ops/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
-    networks: [backend]
     logging: *default-logging
 
   grafana:
@@ -373,16 +363,8 @@ services:
       - grafana-data:/var/lib/grafana
     depends_on:
       - prometheus
-    networks: [backend, edge]
     logging: *default-logging
 
-networks:
-  # No external route: database, cache and storage are unreachable from outside.
-  backend:
-    driver: bridge
-    internal: true
-  edge:
-    driver: bridge
 
 volumes:
   postgres-data:
