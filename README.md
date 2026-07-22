@@ -40,10 +40,23 @@ Postgres, Redis and PgBouncer are reachable only from inside the network.
 No `.env` needed. Sane local defaults are baked into the compose file:
 
 ```bash
+./run.sh
+```
+
+`run.sh` is just `docker compose up -d --build` with one guard: it first clears
+any network this project left behind from a previously failed/interrupted start
+(other projects' networks are never touched). Plain compose works too:
+
+```bash
 docker compose up -d --build
 ```
 
-That's it. The stack comes up and the API is on **http://localhost:9222**:
+> **`all predefined address pools have been fully subnetted`?** A failed run
+> left this project's network orphaned, still holding a subnet. `./run.sh`
+> clears it automatically. To do it by hand once:
+> `docker network rm <project>_backend <project>_default 2>/dev/null` then retry.
+
+The stack comes up and the API is on **http://localhost:9222**:
 
 ```bash
 curl http://localhost:9222/healthz     # {"status":"ok"}
