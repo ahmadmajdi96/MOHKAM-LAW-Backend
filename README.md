@@ -51,10 +51,12 @@ any network this project left behind from a previously failed/interrupted start
 docker compose up -d --build
 ```
 
-> **`all predefined address pools have been fully subnetted`?** A failed run
-> left this project's network orphaned, still holding a subnet. `./run.sh`
-> clears it automatically. To do it by hand once:
-> `docker network rm <project>_backend <project>_default 2>/dev/null` then retry.
+> **`all predefined address pools have been fully subnetted`?** Already handled.
+> The compose network declares an explicit subnet (`10.89.0.0/24`), so Docker
+> uses it directly instead of auto-allocating from its default pools — the pools
+> that run out on machines with many networks. Nothing to change on your host.
+> If that subnet ever clashes with a VPN or LAN, pick another without editing
+> any file: `DOCKER_SUBNET=10.123.45.0/24 docker compose up -d`
 
 The stack comes up and the API is on **http://localhost:9222**:
 

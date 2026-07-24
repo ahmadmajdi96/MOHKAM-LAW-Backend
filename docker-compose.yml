@@ -366,6 +366,29 @@ services:
     logging: *default-logging
 
 
+networks:
+  # One network, with an EXPLICIT subnet.
+  #
+  # Without a subnet here, Docker auto-allocates one from its "default address
+  # pools". On a machine with many existing networks those pools run out, and
+  # every `up` then fails with:
+  #
+  #   failed to create network ..._default: all predefined address pools
+  #   have been fully subnetted
+  #
+  # Naming the subnet makes Docker use it directly and skip pool allocation
+  # entirely, so that error cannot happen — no host-level Docker changes needed.
+  #
+  # 10.89.0.0/24 avoids Docker's own default range (172.16–172.31) and the
+  # usual home/office LANs (192.168.x, 10.0.x). If it ever clashes with a VPN
+  # or LAN, override without editing this file:
+  #   DOCKER_SUBNET=10.123.45.0/24 docker compose up -d
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: ${DOCKER_SUBNET:-10.89.0.0/24}
+
 volumes:
   postgres-data:
   redis-data:
